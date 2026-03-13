@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram Posts — Z-Score CMJ · Víctor Garrido</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy:    #0D1B2A;
+    --navy2:   #132030;
+    --teal:    #0D9488;
+    --teal-lt: #CCFBF1;
+    --amber:   #D97706;
+    --amber-lt:#FEF3C7;
+    --red:     #B91C1C;
+    --red-lt:  #FEE2E2;
+    --green:   #047857;
+    --green-lt:#D1FAE5;
+    --slate:   #334155;
+    --card:    #FFFFFF;
+    --off:     #F8FAFC;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a2e;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .label {
+    color: #888;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+    align-self: flex-start;
+    margin-left: calc(50% - 540px);
+  }
+
+  /* ── Each post is 1080×1080 ── */
+  .post {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ══════════════════════════════════════
+     POST 1 — PORTADA
+  ══════════════════════════════════════ */
+  .p1 {
+    background: var(--navy);
+  }
+  .p1 .bg-accent {
+    position: absolute;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #0D948830 0%, transparent 70%);
+    top: -200px; right: -200px;
+  }
+  .p1 .bg-lines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.015) 40px,
+      rgba(255,255,255,0.015) 41px
+    );
+  }
+  .p1 .tag {
+    position: absolute;
+    top: 60px; left: 64px;
+    background: var(--teal);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    padding: 8px 20px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .p1 .number {
+    position: absolute;
+    top: 54px; right: 64px;
+    font-family: 'DM Mono', monospace;
+    color: rgba(255,255,255,0.2);
+    font-size: 16px;
+  }
+  .p1 .main {
+    position: absolute;
+    top: 160px; left: 64px; right: 64px;
+  }
+  .p1 .eyebrow {
+    font-size: 22px;
+    color: var(--teal-lt);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  .p1 h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 142px;
+    line-height: 0.88;
+    color: white;
+    letter-spacing: 2px;
+  }
+  .p1 h1 span { color: var(--teal); }
+  .p1 .sub {
+    margin-top: 36px;
+    font-size: 26px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.4;
+    font-weight: 300;
+    max-width: 680px;
+  }
+  .p1 .divider {
+    position: absolute;
+    bottom: 200px; left: 64px;
+    width: 80px; height: 4px;
+    background: var(--teal);
+  }
+  .p1 .footer-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: rgba(13,148,136,0.12);
+    border-top: 1px solid rgba(13,148,136,0.3);
+    display: flex;
+    align-items: center;
+    padding: 0 64px;
+    justify-content: space-between;
+  }
+  .p1 .author { color: white; font-size: 22px; font-weight: 600; }
+  .p1 .author span { color: var(--teal-lt); font-weight: 300; }
+  .p1 .swipe {
+    color: rgba(255,255,255,0.4);
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ══════════════════════════════════════
+     POST 2 — EL PROBLEMA
+  ══════════════════════════════════════ */
+  .p2 { background: var(--off); }
+  .p2 .hdr {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 130px;
+    background: var(--navy);
+    display: flex; align-items: flex-end; padding-bottom: 22px; padding-left: 64px;
+  }
+  .p2 .hdr h2 {
+    font-family: 'Bebas Neue';
+    font-size: 54px;
+    color: white;
+    letter-spacing: 2px;
+  }
+  .p2 .hdr .num {
+    position: absolute; right: 64px; bottom: 22px;
+    font-family: 'DM Mono'; color: var(--teal); font-size: 18px;
+  }
+  .p2 .question {
+    position: absolute;
+    top: 165px; left: 64px; right: 64px;
+    font-size: 30px; color: var(--slate); line-height: 1.4;
+    font-weight: 300;
+  }
+  .p2 .question strong { color: var(--navy); font-weight: 700; }
+  .p2 .cards {
+    position: absolute;
+    top: 290px; left: 64px; right: 64px;
+    display: flex; gap: 32px;
+  }
+  .p2 .card {
+    flex: 1; background: white;
+    border-radius: 16px;
+    padding: 48px 36px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    position: relative;
+    border-top: 6px solid transparent;
+  }
+  .p2 .card.red { border-top-color: var(--red); }
+  .p2 .card.green { border-top-color: var(--green); }
+  .p2 .card .athlete { font-size: 20px; color: var(--slate); font-weight: 600; margin-bottom: 16px; }
+  .p2 .card .jump { font-family: 'Bebas Neue'; font-size: 110px; line-height: 1; color: var(--navy); }
+  .p2 .card .jump span { font-size: 36px; color: var(--slate); font-weight: 300; }
+  .p2 .card .stats { margin: 20px 0; }
+  .p2 .card .stat { font-family: 'DM Mono'; font-size: 17px; color: var(--slate); margin-bottom: 10px; }
+  .p2 .card .stat b { color: var(--navy); }
+  .p2 .card .zscore-badge {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Bebas Neue'; font-size: 48px; letter-spacing: 1px;
+    margin-top: 16px;
+  }
+  .p2 .card.red .zscore-badge { background: var(--red-lt); color: var(--red); }
+  .p2 .card.green .zscore-badge { background: var(--green-lt); color: var(--green); }
+  .p2 .card .verdict {
+    margin-top: 14px; font-size: 18px; font-weight: 700;
+  }
+  .p2 .card.red .verdict { color: var(--red); }
+  .p2 .card.green .verdict { color: var(--green); }
+  .p2 .insight {
+    position: absolute;
+    bottom: 60px; left: 64px; right: 64px;
+    background: var(--navy); color: white;
+    border-radius: 12px; padding: 30px 40px;
+    font-size: 22px; line-height: 1.5; text-align: center;
+  }
+  .p2 .insight span { color: var(--teal-lt); font-weight: 700; }
+  .p2 .vg { position: absolute; bottom: 18px; right: 64px; font-family: 'DM Mono'; font-size: 13px; color: #94A3B8; }
+
+  /* ══════════════════════════════════════
+     POST 3 — FÓRMULA
+  ══════════════════════════════════════ */
+  .p3 { background: var(--navy2); }
+  .p3 .bg { position: absolute; inset: 0; background: repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(13,148,136,0.04) 80px,rgba(13,148,136,0.04) 81px); }
+  .p3 .hdr { position: absolute; top: 0; left: 0; right: 0; height: 130px; background: var(--teal); display: flex; align-items: flex-end; padding-bottom: 22px; padding-left: 64px; }
+  .p3 .hdr h2 { font-family: 'Bebas Neue'; font-size: 54px; color: white; letter-spacing: 2px; }
+  .p3 .hdr .num { position: absolute; right: 64px; bottom: 22px; font-family: 'DM Mono'; color: rgba(255,255,255,0.5); font-size: 18px; }
+  .p3 .formula-box {
+    position: absolute; top: 175px; left: 64px; right: 64px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(13,148,136,0.3);
+    border-radius: 16px; padding: 52px;
+    text-align: center;
+  }
+  .p3 .formula {
+    font-family: 'DM Mono'; font-size: 52px; color: var(--teal-lt);
+    letter-spacing: 2px; line-height: 1.3;
+  }
+  .p3 .formula .op { color: rgba(255,255,255,0.3); }
+  .p3 .formula .var { color: var(--teal); }
+  .p3 .parts {
+    position: absolute; top: 450px; left: 64px; right: 64px;
+    display: flex; gap: 28px;
+  }
+  .p3 .part {
+    flex: 1; background: rgba(255,255,255,0.06); border-radius: 12px;
+    padding: 36px 28px; border-left: 4px solid var(--teal);
+  }
+  .p3 .part .letter { font-family: 'DM Mono'; font-size: 42px; color: var(--teal); font-weight: 500; margin-bottom: 12px; }
+  .p3 .part .name { font-size: 20px; color: white; font-weight: 700; margin-bottom: 10px; }
+  .p3 .part .desc { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .p3 .rule {
+    position: absolute; bottom: 88px; left: 64px; right: 64px;
+    background: var(--teal); border-radius: 10px; padding: 26px 40px;
+    font-size: 22px; color: white; text-align: center; font-weight: 600; line-height: 1.4;
+  }
+  .p3 .vg { position: absolute; bottom: 28px; right: 64px; font-family: 'DM Mono'; font-size: 13px; color: rgba(255,255,255,0.25); }
+
+  /* ══════════════════════════════════════
+     POST 4 — SEMÁFORO
+  ══════════════════════════════════════ */
+  .p4 { background: white; }
+  .p4 .hdr { position: absolute; top: 0; left: 0; right: 0; height: 130px; background: var(--navy); display: flex; align-items: flex-end; padding-bottom: 22px; padding-left: 64px; }
+  .p4 .hdr h2 { font-family: 'Bebas Neue'; font-size: 54px; color: white; letter-spacing: 2px; }
+  .p4 .hdr .num { position: absolute; right: 64px; bottom: 22px; font-family: 'DM Mono'; color: var(--teal); font-size: 18px; }
+  .p4 .intro { position: absolute; top: 160px; left: 64px; right: 64px; font-size: 24px; color: var(--slate); font-weight: 300; line-height: 1.4; }
+  .p4 .rows { position: absolute; top: 265px; left: 64px; right: 64px; }
+  .p4 .row {
+    display: flex; align-items: center; margin-bottom: 18px;
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .p4 .bar { width: 10px; flex-shrink: 0; align-self: stretch; }
+  .p4 .z-val { width: 160px; flex-shrink: 0; padding: 22px 20px; font-family: 'DM Mono'; font-size: 22px; font-weight: 500; text-align: center; }
+  .p4 .z-label { flex: 1; padding: 22px 28px; }
+  .p4 .z-label .title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+  .p4 .z-label .action { font-size: 16px; opacity: 0.75; }
+  .row-ex  .bar { background: #1D4ED8; } .row-ex  .z-val { background: #DBEAFE; color: #1D4ED8; } .row-ex  { background: #EFF6FF; } .row-ex  .title { color: #1D4ED8; }
+  .row-ab  .bar { background: #047857; } .row-ab  .z-val { background: #D1FAE5; color: #047857; } .row-ab  { background: #F0FDF4; } .row-ab  .title { color: #047857; }
+  .row-ok  .bar { background: #64748B; } .row-ok  .z-val { background: #F1F5F9; color: #475569; } .row-ok  { background: #F8FAFC; } .row-ok  .title { color: #334155; }
+  .row-lv  .bar { background: #D97706; } .row-lv  .z-val { background: #FEF3C7; color: #B45309; } .row-lv  { background: #FFFBEB; } .row-lv  .title { color: #92400E; }
+  .row-sg  .bar { background: #EA580C; } .row-sg  .z-val { background: #FFEDD5; color: #C2410C; } .row-sg  { background: #FFF7ED; } .row-sg  .title { color: #9A3412; }
+  .row-sv  .bar { background: #B91C1C; } .row-sv  .z-val { background: #FEE2E2; color: #991B1B; } .row-sv  { background: #FFF5F5; } .row-sv  .title { color: #7F1D1D; }
+  .p4 .vg { position: absolute; bottom: 28px; right: 64px; font-family: 'DM Mono'; font-size: 13px; color: #94A3B8; }
+
+  /* ══════════════════════════════════════
+     POST 5 — CV
+  ══════════════════════════════════════ */
+  .p5 { background: var(--off); }
+  .p5 .hdr { position: absolute; top: 0; left: 0; right: 0; height: 130px; background: var(--navy); display: flex; align-items: flex-end; padding-bottom: 22px; padding-left: 64px; }
+  .p5 .hdr h2 { font-family: 'Bebas Neue'; font-size: 54px; color: white; letter-spacing: 2px; }
+  .p5 .hdr .num { position: absolute; right: 64px; bottom: 22px; font-family: 'DM Mono'; color: var(--teal); font-size: 18px; }
+  .p5 .formula-strip {
+    position: absolute; top: 164px; left: 64px; right: 64px;
+    background: var(--navy); border-radius: 12px; padding: 30px 44px;
+    font-family: 'DM Mono'; font-size: 30px; color: var(--teal-lt); text-align: center; letter-spacing: 1px;
+  }
+  .p5 .sub { position: absolute; top: 310px; left: 64px; right: 64px; font-size: 22px; color: var(--slate); font-weight: 300; }
+  .p5 .sub strong { color: var(--navy); }
+  .p5 .zones { position: absolute; top: 380px; left: 64px; right: 64px; }
+  .p5 .zone { display: flex; align-items: center; margin-bottom: 22px; gap: 24px; border-radius: 10px; overflow:hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .p5 .zone .bar { width: 10px; flex-shrink:0; align-self:stretch; }
+  .p5 .zone .pct { width: 140px; padding: 22px 16px; font-family: 'DM Mono'; font-size: 24px; font-weight: 600; text-align: center; flex-shrink: 0; }
+  .p5 .zone .info { flex: 1; padding: 22px 24px; }
+  .p5 .zone .info .name { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .p5 .zone .info .rec { font-size: 16px; opacity: 0.75; }
+  .z5-a .bar { background:#047857; } .z5-a .pct { background:#D1FAE5; color:#047857; } .z5-a { background: #F0FDF4; } .z5-a .name { color:#047857; }
+  .z5-b .bar { background:#0D9488; } .z5-b .pct { background:#CCFBF1; color:#0D9488; } .z5-b { background: #F0FDFA; } .z5-b .name { color:#0D7469; }
+  .z5-c .bar { background:#D97706; } .z5-c .pct { background:#FEF3C7; color:#B45309; } .z5-c { background: #FFFBEB; } .z5-c .name { color:#92400E; }
+  .z5-d .bar { background:#B91C1C; } .z5-d .pct { background:#FEE2E2; color:#991B1B; } .z5-d { background: #FFF5F5; } .z5-d .name { color:#7F1D1D; }
+  .p5 .excel-box {
+    position: absolute; bottom: 60px; left: 64px; right: 64px;
+    background: var(--navy2); border-radius: 10px; padding: 24px 36px;
+    font-family: 'DM Mono'; font-size: 18px; color: var(--teal-lt);
+  }
+  .p5 .excel-box .label-e { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
+  .p5 .vg { position: absolute; bottom: 22px; right: 64px; font-family: 'DM Mono'; font-size: 13px; color: #94A3B8; }
+
+  /* ══════════════════════════════════════
+     POST 6 — CASO REAL
+  ══════════════════════════════════════ */
+  .p6 { background: var(--navy); }
+  .p6 .hdr { position: absolute; top: 0; left: 0; right: 0; height: 130px; background: var(--red); display: flex; align-items: flex-end; padding-bottom: 22px; padding-left: 64px; }
+  .p6 .hdr h2 { font-family: 'Bebas Neue'; font-size: 54px; color: white; letter-spacing: 2px; }
+  .p6 .hdr .num { position: absolute; right: 64px; bottom: 22px; font-family: 'DM Mono'; color: rgba(255,255,255,0.5); font-size: 18px; }
+  .p6 .intro { position: absolute; top: 162px; left: 64px; right: 64px; font-size: 23px; color: rgba(255,255,255,0.7); font-weight: 300; line-height: 1.5; }
+  .p6 .intro strong { color: white; }
+  .p6 .timeline { position: absolute; top: 310px; left: 80px; right: 64px; }
+  .p6 .step { display: flex; align-items: flex-start; margin-bottom: 38px; position: relative; }
+  .p6 .dot {
+    width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue'; font-size: 24px; color: white; margin-right: 28px; margin-top: 4px;
+  }
+  .p6 .step-line { position: absolute; left: 25px; top: 56px; bottom: -38px; width: 2px; background: rgba(255,255,255,0.1); }
+  .p6 .step:last-child .step-line { display: none; }
+  .p6 .step-body .title { font-size: 21px; font-weight: 700; color: white; margin-bottom: 8px; }
+  .p6 .step-body .desc { font-size: 17px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .p6 .lesson {
+    position: absolute; bottom: 58px; left: 64px; right: 64px;
+    border: 2px solid var(--teal); border-radius: 12px; padding: 28px 36px;
+    font-size: 22px; color: var(--teal-lt); text-align: center; line-height: 1.5;
+  }
+  .p6 .lesson strong { color: white; }
+  .p6 .vg { position: absolute; bottom: 22px; right: 64px; font-family: 'DM Mono'; font-size: 13px; color: rgba(255,255,255,0.2); }
+
+  /* ══════════════════════════════════════
+     POST 7 — CALCULADORA / HERRAMIENTA
+  ══════════════════════════════════════ */
+  .p7 { background: var(--navy2); }
+  .p7 .glow { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(13,148,136,0.2) 0%, transparent 70%); bottom: -100px; right: -100px; }
+  .p7 .hdr { position: absolute; top: 0; left: 0; right: 0; height: 130px; background: var(--teal); display: flex; align-items: flex-end; padding-bottom: 22px; padding-left: 64px; }
+  .p7 .hdr h2 { font-family: 'Bebas Neue'; font-size: 54px; color: white; letter-spacing: 2px; }
+  .p7 .hdr .num { position: absolute; right: 64px; bottom: 22px; font-family: 'DM Mono'; color: rgba(255,255,255,0.5); font-size: 18px; }
+  .p7 .mockup {
+    position: absolute; top: 165px; left: 64px; width: 540px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(13,148,136,0.3);
+    border-radius: 16px; padding: 36px;
+  }
+  .p7 .mockup .m-title { font-size: 18px; color: var(--teal-lt); font-weight: 600; margin-bottom: 24px; }
+  .p7 .m-row { margin-bottom: 20px; }
+  .p7 .m-label { font-family: 'DM Mono'; font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; }
+  .p7 .m-input {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; padding: 14px 18px;
+    font-family: 'DM Mono'; font-size: 22px; color: white; width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .p7 .m-input .val { }
+  .p7 .m-input .unit { color: rgba(255,255,255,0.3); font-size: 16px; }
+  .p7 .m-result {
+    margin-top: 28px; background: rgba(13,148,136,0.15); border: 1px solid var(--teal);
+    border-radius: 10px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .p7 .m-z { font-family: 'Bebas Neue'; font-size: 64px; color: var(--teal-lt); line-height: 1; }
+  .p7 .m-badge { background: #FEF3C7; color: #B45309; padding: 8px 18px; border-radius: 6px; font-size: 16px; font-weight: 700; }
+  .p7 .features { position: absolute; top: 165px; right: 64px; width: 400px; }
+  .p7 .feat {
+    background: rgba(255,255,255,0.05); border-radius: 12px;
+    padding: 24px 28px; margin-bottom: 20px;
+    border-left: 3px solid var(--teal);
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  .p7 .feat .ico { font-size: 28px; flex-shrink: 0; }
+  .p7 .feat .ft { font-size: 17px; color: white; font-weight: 600; margin-bottom: 6px; }
+  .p7 .feat .fd { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.4; }
+  .p7 .url-box {
+    position: absolute; bottom: 64px; left: 64px; right: 64px;
+    background: var(--teal); border-radius: 12px; padding: 30px 44px;
+    text-align: center;
+  }
+  .p7 .url-box .url-label { font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 8px; letter-spacing: 1px; }
+  .p7 .url-box .url { font-family: 'DM Mono'; font-size: 26px; color: white; font-weight: 500; }
+  .p7 .vg { position: absolute; bottom: 26px; right: 64px; font-family: 'DM Mono'; font-size: 13px; color: rgba(255,255,255,0.2); }
+
+  /* ══════════════════════════════════════
+     POST 8 — CIERRE / CTA
+  ══════════════════════════════════════ */
+  .p8 { background: var(--navy); }
+  .p8 .grid {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, transparent 50%, rgba(13,148,136,0.05) 100%);
+  }
+  .p8 .dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .p8 .badge {
+    position: absolute; top: 60px; left: 64px;
+    background: var(--teal); color: white;
+    font-family: 'DM Mono'; font-size: 16px; padding: 8px 20px; border-radius: 4px; letter-spacing: 1px;
+  }
+  .p8 .main { position: absolute; top: 155px; left: 64px; right: 64px; }
+  .p8 h2 { font-family: 'Bebas Neue'; font-size: 96px; color: white; line-height: 0.9; letter-spacing: 2px; }
+  .p8 h2 span { color: var(--teal); }
+  .p8 .sub { margin-top: 28px; font-size: 26px; color: rgba(255,255,255,0.6); font-weight: 300; line-height: 1.4; max-width: 700px; }
+  .p8 .pills {
+    position: absolute; top: 590px; left: 64px; right: 64px;
+    display: flex; flex-wrap: wrap; gap: 16px;
+  }
+  .p8 .pill {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 40px; padding: 14px 28px;
+    color: white; font-size: 18px; font-weight: 600;
+  }
+  .p8 .pill.teal { background: rgba(13,148,136,0.2); border-color: var(--teal); color: var(--teal-lt); }
+  .p8 .footer-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 130px;
+    background: var(--teal); display: flex; align-items: center;
+    padding: 0 64px; justify-content: space-between;
+  }
+  .p8 .footer-bar .handle { font-family: 'Bebas Neue'; font-size: 38px; color: white; letter-spacing: 2px; }
+  .p8 .footer-bar .cta { font-size: 19px; color: rgba(255,255,255,0.8); font-weight: 300; }
+  .p8 .footer-bar .arrow { font-size: 36px; color: white; }
+
+  /* Print / export helpers */
+  @media print {
+    body { background: white; gap: 0; padding: 0; }
+    .label { display: none; }
+    .post { page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     POST 1 — PORTADA
+════════════════════════════════════════════ -->
+<div class="label">POST 1 / 8 — PORTADA</div>
+<div class="post p1">
+  <div class="bg-accent"></div>
+  <div class="bg-lines"></div>
+  <div class="tag">CIENCIAS DEL DEPORTE</div>
+  <div class="number">01 / 08</div>
+  <div class="main">
+    <div class="eyebrow">Monitoreo neuromuscular</div>
+    <h1>Z–<span>SCORE</span><br>CMJ</h1>
+    <div class="sub">Cómo convertir un número de placa de fuerza en una decisión de entrenamiento.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="footer-bar">
+    <div class="author">Víctor Garrido <span>· Fuerza y Condicionamiento</span></div>
+    <div class="swipe">Desliza →</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 2 — EL PROBLEMA
+════════════════════════════════════════════ -->
+<div class="label">POST 2 / 8 — EL PROBLEMA</div>
+<div class="post p2">
+  <div class="hdr"><h2>El problema con comparar atletas</h2><div class="num">02/08</div></div>
+  <div class="question">Dos atletas saltan <strong>36 cm</strong> el mismo día. ¿Están igual?</div>
+  <div class="cards">
+    <div class="card red">
+      <div class="athlete">Atleta A</div>
+      <div class="jump">36<span> cm</span></div>
+      <div class="stats">
+        <div class="stat">Media personal: <b>40 cm</b></div>
+        <div class="stat">SD personal: <b>1.5 cm</b></div>
+      </div>
+      <div class="zscore-badge">z = −2.67</div>
+      <div class="verdict">⚠ Alerta severa</div>
+    </div>
+    <div class="card green">
+      <div class="athlete">Atleta B</div>
+      <div class="jump">36<span> cm</span></div>
+      <div class="stats">
+        <div class="stat">Media personal: <b>34 cm</b></div>
+        <div class="stat">SD personal: <b>5.0 cm</b></div>
+      </div>
+      <div class="zscore-badge">z = +0.40</div>
+      <div class="verdict">✓ Día normal</div>
+    </div>
+  </div>
+  <div class="insight">
+    <span>Mismo salto, conclusiones opuestas.</span><br>El z-score es una lupa individual, no un ranking.
+  </div>
+  <div class="vg">@vgarrido · Ciencias del Deporte</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 3 — FÓRMULA
+════════════════════════════════════════════ -->
+<div class="label">POST 3 / 8 — LA FÓRMULA</div>
+<div class="post p3">
+  <div class="bg"></div>
+  <div class="hdr"><h2>La fórmula del z-score</h2><div class="num">03/08</div></div>
+  <div class="formula-box">
+    <div class="formula">z <span class="op">=</span> ( <span class="var">valor_hoy</span> <span class="op">−</span> <span class="var">media_personal</span> ) <span class="op">÷</span> <span class="var">SD_personal</span></div>
+  </div>
+  <div class="parts">
+    <div class="part">
+      <div class="letter">X</div>
+      <div class="name">Valor de hoy</div>
+      <div class="desc">El dato medido en la sesión actual del atleta</div>
+    </div>
+    <div class="part">
+      <div class="letter">μ</div>
+      <div class="name">Media personal</div>
+      <div class="desc">Promedio histórico de ese atleta en esa métrica</div>
+    </div>
+    <div class="part">
+      <div class="letter">σ</div>
+      <div class="name">SD personal</div>
+      <div class="desc">Desviación estándar individual. Calibra la sensibilidad del umbral</div>
+    </div>
+  </div>
+  <div class="rule">Mínimo 10 sesiones para que la media y SD sean estables · Ideal 30+</div>
+  <div class="vg">@vgarrido · Ciencias del Deporte</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 4 — SEMÁFORO
+════════════════════════════════════════════ -->
+<div class="label">POST 4 / 8 — SEMÁFORO Z-SCORE</div>
+<div class="post p4">
+  <div class="hdr"><h2>Semáforo de acción por z-score</h2><div class="num">04/08</div></div>
+  <div class="intro">Cada zona tiene un protocolo de respuesta. <strong>No esperes llegar al rojo.</strong></div>
+  <div class="rows">
+    <div class="row row-ex">
+      <div class="bar"></div>
+      <div class="z-val">≥ +1.5</div>
+      <div class="z-label">
+        <div class="title">Excepcional</div>
+        <div class="action">Potenciar carga · Anotar condiciones del día</div>
+      </div>
+    </div>
+    <div class="row row-ab">
+      <div class="bar"></div>
+      <div class="z-val">+0.5 a +1.4</div>
+      <div class="z-label">
+        <div class="title">Por encima del promedio</div>
+        <div class="action">Mantener programa · Contexto positivo</div>
+      </div>
+    </div>
+    <div class="row row-ok">
+      <div class="bar"></div>
+      <div class="z-val">−0.9 a +0.4</div>
+      <div class="z-label">
+        <div class="title">Rango normal</div>
+        <div class="action">Programa previsto sin cambios</div>
+      </div>
+    </div>
+    <div class="row row-lv">
+      <div class="bar"></div>
+      <div class="z-val">−1.0 a −1.4</div>
+      <div class="z-label">
+        <div class="title">Leve descenso</div>
+        <div class="action">Monitorear · Preguntar al atleta</div>
+      </div>
+    </div>
+    <div class="row row-sg">
+      <div class="bar"></div>
+      <div class="z-val">−1.5 a −1.9</div>
+      <div class="z-label">
+        <div class="title">Descenso significativo</div>
+        <div class="action">Reducir carga · Revisar recuperación</div>
+      </div>
+    </div>
+    <div class="row row-sv">
+      <div class="bar"></div>
+      <div class="z-val">≤ −2.0</div>
+      <div class="z-label">
+        <div class="title">Caída severa</div>
+        <div class="action">Comunicar a médico y cuerpo técnico</div>
+      </div>
+    </div>
+  </div>
+  <div class="vg">@vgarrido · Ciencias del Deporte</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 5 — CV
+════════════════════════════════════════════ -->
+<div class="label">POST 5 / 8 — COEFICIENTE DE VARIACIÓN</div>
+<div class="post p5">
+  <div class="hdr"><h2>¿Cuándo confiar en el dato? → CV</h2><div class="num">05/08</div></div>
+  <div class="formula-strip">CV (%) = (SD ÷ Media) × 100</div>
+  <div class="sub">Antes de usar el z-score, verifica que el historial del atleta sea <strong>consistente</strong>.</div>
+  <div class="zones">
+    <div class="zone z5-a">
+      <div class="bar"></div>
+      <div class="pct">&lt; 5 %</div>
+      <div class="info">
+        <div class="name">Muy baja variabilidad</div>
+        <div class="rec">Test reproducible · Z-score muy confiable</div>
+      </div>
+    </div>
+    <div class="zone z5-b">
+      <div class="bar"></div>
+      <div class="pct">5–10 %</div>
+      <div class="info">
+        <div class="name">Aceptable · Rango ideal en práctica</div>
+        <div class="rec">✓ Usar z-score con confianza</div>
+      </div>
+    </div>
+    <div class="zone z5-c">
+      <div class="bar"></div>
+      <div class="pct">10–15 %</div>
+      <div class="info">
+        <div class="name">Variabilidad moderada</div>
+        <div class="rec">Usar con precaución · Revisar protocolo</div>
+      </div>
+    </div>
+    <div class="zone z5-d">
+      <div class="bar"></div>
+      <div class="pct">&gt; 15 %</div>
+      <div class="info">
+        <div class="name">Variabilidad alta · No usar z-score</div>
+        <div class="rec">Estandarizar protocolo primero</div>
+      </div>
+    </div>
+  </div>
+  <div class="excel-box">
+    <div class="label-e">Excel</div>
+    =STDEV(B2:B21) / AVERAGE(B2:B21) * 100 → si &lt; 10, ✓
+  </div>
+  <div class="vg">@vgarrido · Ciencias del Deporte</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 6 — CASO REAL
+════════════════════════════════════════════ -->
+<div class="label">POST 6 / 8 — CASO REAL NBA</div>
+<div class="post p6">
+  <div class="hdr"><h2>El caso que lo cambió todo</h2><div class="num">06/08</div></div>
+  <div class="intro">Un jugador de la <strong>NBA</strong> con rendimiento normal en cancha. Las placas de fuerza detectaron algo diferente.</div>
+  <div class="timeline">
+    <div class="step">
+      <div class="dot" style="background:#475569">1</div>
+      <div class="step-line"></div>
+      <div class="step-body">
+        <div class="title">Rendimiento normal en cancha</div>
+        <div class="desc">Minutos, puntos y métricas de juego: todo dentro de lo esperado</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="dot" style="background:#D97706">2</div>
+      <div class="step-line"></div>
+      <div class="step-body">
+        <div class="title">3 sesiones con asimetría fuera de rango</div>
+        <div class="desc">Z-score de fuerza unilateral por debajo de −2.0 en tres mediciones consecutivas</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="dot" style="background:#B91C1C">3</div>
+      <div class="step-line"></div>
+      <div class="step-body">
+        <div class="title">Staff médico notificado → radiografía</div>
+        <div class="desc">El dato disparó el protocolo de alerta antes de que hubiera síntoma clínico</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="dot" style="background:#047857">4</div>
+      <div class="step-body">
+        <div class="title">Fractura de estrés detectada a tiempo</div>
+        <div class="desc">Sin el monitoreo: posiblemente una fractura completa y meses de baja</div>
+      </div>
+    </div>
+  </div>
+  <div class="lesson">
+    <strong>La placa de fuerza vio lo que el ojo no vio.</strong><br>El z-score convirtió el dato en alerta a tiempo.
+  </div>
+  <div class="vg">Fuente: DeWit, J. (2023). Science of Sport Podcast · @vgarrido</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 7 — CALCULADORA
+════════════════════════════════════════════ -->
+<div class="label">POST 7 / 8 — CALCULADORA</div>
+<div class="post p7">
+  <div class="glow"></div>
+  <div class="hdr"><h2>Calculadora gratuita para tu equipo</h2><div class="num">07/08</div></div>
+  <div class="mockup">
+    <div class="m-title">Z-Score Monitor — CMJ</div>
+    <div class="m-row">
+      <div class="m-label">Media personal</div>
+      <div class="m-input"><span class="val">39.0</span><span class="unit">cm</span></div>
+    </div>
+    <div class="m-row">
+      <div class="m-label">SD personal</div>
+      <div class="m-input"><span class="val">3.0</span><span class="unit">cm</span></div>
+    </div>
+    <div class="m-row">
+      <div class="m-label">Valor hoy</div>
+      <div class="m-input"><span class="val">34.0</span><span class="unit">cm</span></div>
+    </div>
+    <div class="m-result">
+      <div class="m-z">−1.67</div>
+      <div>
+        <div style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:8px">z-score</div>
+        <div class="m-badge">Descenso significativo</div>
+      </div>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feat">
+      <div class="ico">⚡</div>
+      <div>
+        <div class="ft">Cálculo en tiempo real</div>
+        <div class="fd">Semáforo automático mientras tipeas</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="ico">📋</div>
+      <div>
+        <div class="ft">Historial de sesiones</div>
+        <div class="fd">Guarda y ve la evolución de tus atletas</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="ico">💾</div>
+      <div>
+        <div class="ft">Exportar CSV</div>
+        <div class="fd">Compatible con Excel y Google Sheets</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="ico">🔒</div>
+      <div>
+        <div class="ft">Sin registro. Sin servidor.</div>
+        <div class="fd">Los datos viven solo en tu navegador</div>
+      </div>
+    </div>
+  </div>
+  <div class="url-box">
+    <div class="url-label">ACCESO GRATUITO</div>
+    <div class="url">vgarrido1995.github.io/zscore-cmj-calculator</div>
+  </div>
+  <div class="vg">@vgarrido · Ciencias del Deporte</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST 8 — CIERRE / CTA
+════════════════════════════════════════════ -->
+<div class="label">POST 8 / 8 — CIERRE</div>
+<div class="post p8">
+  <div class="grid"></div>
+  <div class="dots"></div>
+  <div class="badge">TAKEAWAYS</div>
+  <div class="main">
+    <h2>4 cosas<br>para <span>llevar</span><br>hoy</h2>
+    <div class="sub">Monitoreo con placa de fuerza en 4 principios que puedes aplicar mañana.</div>
+  </div>
+  <div class="pills">
+    <div class="pill teal">z &lt; −1.0 → conversa con el atleta</div>
+    <div class="pill teal">z &lt; −2.0 → acción inmediata</div>
+    <div class="pill">CV &lt; 10 % antes de z-score</div>
+    <div class="pill">Mínimo 10 sesiones de historial</div>
+    <div class="pill">RSI-mod · Duración excéntrica · Peak power</div>
+  </div>
+  <div class="footer-bar">
+    <div class="handle">@VGARRIDO · FUERZA Y CONDICIONAMIENTO</div>
+    <div class="cta">Guarda este carrusel 📌</div>
+  </div>
+</div>
+
+</body>
+</html>
