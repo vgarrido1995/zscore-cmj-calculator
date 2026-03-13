@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-Score Monitor — Pruebas de Rendimiento</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f5f5f0;color:#2d2d2d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+h1{font-size:1.5rem;font-weight:700;margin-bottom:2px;text-align:center}
+.subtitle{font-size:.9rem;color:#666;margin-bottom:20px;text-align:center}
+
+/* Tabs */
+.tabs{display:flex;gap:0;width:100%;max-width:680px;margin-bottom:0;flex-wrap:wrap}
+.tab{flex:1;min-width:120px;padding:10px 8px;text-align:center;font-size:.78rem;font-weight:600;cursor:pointer;background:#e8e8e4;border:1px solid #ddd;border-bottom:none;border-radius:8px 8px 0 0;color:#888;transition:all .15s;user-select:none}
+.tab:hover{background:#f0f0ec;color:#555}
+.tab.active{background:#fff;color:#2d2d2d;border-bottom-color:#fff;position:relative;z-index:1}
+
+/* Mode toggle */
+.mode-bar{width:100%;max-width:680px;display:flex;justify-content:center;gap:0;margin-bottom:18px;margin-top:12px}
+.mode-btn{padding:8px 24px;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid #ccc;background:#fff;color:#888;transition:all .15s}
+.mode-btn:first-child{border-radius:6px 0 0 6px}
+.mode-btn:last-child{border-radius:0 6px 6px 0}
+.mode-btn.active{background:#2d2d2d;color:#fff;border-color:#2d2d2d}
+
+/* Card */
+.card{background:#fff;border-radius:0 12px 12px 12px;padding:28px 32px;width:100%;max-width:680px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px}
+.card.rounded{border-radius:12px}
+.card-title{font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:16px}
+
+/* Sliders */
+.slider-group{margin-bottom:16px}
+.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:.9rem}
+.slider-label span:last-child{font-weight:600;min-width:55px;text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:#e0e0e0;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#555;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#555;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+
+/* Result */
+.result-area{display:flex;align-items:baseline;gap:12px;margin-top:6px;flex-wrap:wrap}
+.zscore-value{font-size:3rem;font-weight:700;line-height:1}
+.zscore-label{font-size:.88rem;color:#888}
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.78rem;font-weight:600}
+.badge-normal{background:#e8f5e9;color:#2e7d32}
+.badge-mild{background:#fff8e1;color:#f9a825}
+.badge-alert{background:#fff3e0;color:#e65100}
+.badge-high{background:#ffebee;color:#c62828}
+.badge-positive{background:#e3f2fd;color:#1565c0}
+.interpretation{margin-top:10px;font-size:.88rem;color:#555;line-height:1.5}
+.separator{width:100%;height:1px;background:#eee;margin:18px 0}
+
+/* Session log */
+.log-section{display:none}
+.log-section.visible{display:block}
+.log-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.log-header select,.log-header input{padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:.85rem;background:#fff}
+.btn{padding:7px 16px;border:none;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-primary{background:#2d2d2d;color:#fff}
+.btn-primary:hover{background:#444}
+.btn-outline{background:transparent;border:1px solid #ccc;color:#666}
+.btn-outline:hover{background:#f5f5f5}
+.btn-danger{background:transparent;border:1px solid #e57373;color:#c62828;font-size:.75rem;padding:4px 10px}
+.btn-danger:hover{background:#ffebee}
+
+/* Table */
+.log-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:8px}
+.log-table th{text-align:left;padding:8px 6px;border-bottom:2px solid #eee;color:#888;font-weight:600;font-size:.75rem;text-transform:uppercase}
+.log-table td{padding:7px 6px;border-bottom:1px solid #f0f0f0}
+.log-table tr:hover td{background:#fafaf7}
+
+/* Stats box */
+.stats-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:14px}
+.stat-item{text-align:center;padding:12px 8px;background:#fafaf7;border-radius:8px}
+.stat-num{font-size:1.4rem;font-weight:700}
+.stat-lbl{font-size:.72rem;color:#888;margin-top:2px;text-transform:uppercase}
+
+/* Info boxes */
+.info-box{background:#f9f9f5;border-left:3px solid #ccc;padding:12px 16px;border-radius:0 8px 8px 0;font-size:.84rem;color:#666;line-height:1.6}
+.info-box strong{color:#444}
+.tip{background:#f0f7ff;border-left-color:#90caf9}
+
+/* Comparison */
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.athlete-card{border:1px solid #e8e8e8;border-radius:10px;padding:16px;text-align:center}
+.athlete-card h3{font-size:.9rem;margin-bottom:8px;font-weight:600}
+.athlete-stat{font-size:.78rem;color:#777;margin-bottom:2px}
+.athlete-zscore{font-size:1.6rem;font-weight:700;margin:6px 0 4px}
+.note{font-size:.8rem;color:#999;text-align:center;margin-top:8px;line-height:1.5}
+
+.hidden{display:none!important}
+.footer{margin-top:14px;font-size:.75rem;color:#aaa;text-align:center;line-height:1.6}
+
+@media(max-width:560px){
+  .card{padding:18px 16px;border-radius:12px}
+  .comparison{grid-template-columns:1fr}
+  .zscore-value{font-size:2.2rem}
+  h1{font-size:1.2rem}
+  .tab{font-size:.7rem;padding:8px 4px;min-width:0}
+  .stats-box{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<h1>Z-Score Monitor</h1>
+<p class="subtitle">Calculadora interactiva de z-score para pruebas de rendimiento</p>
+
+<!-- TEST TABS -->
+<div class="tabs" id="tabs"></div>
+
+<!-- MAIN CARD -->
+<div class="card" id="calcCard">
+  <div class="card-title" id="testTitle">Altura CMJ</div>
+
+  <div class="slider-group">
+    <div class="slider-label"><span id="meanLabel">Media personal (cm)</span><span id="meanVal">39.0</span></div>
+    <input type="range" id="mean" min="0" max="100" step="0.5" value="39">
+  </div>
+  <div class="slider-group">
+    <div class="slider-label"><span id="sdLabel">SD personal (cm)</span><span id="sdVal">3.0</span></div>
+    <input type="range" id="sd" min="0.1" max="20" step="0.1" value="3">
+  </div>
+  <div class="slider-group">
+    <div class="slider-label"><span id="todayLabel">Valor hoy (cm)</span><span id="todayVal">37.0</span></div>
+    <input type="range" id="today" min="0" max="100" step="0.5" value="37">
+  </div>
+
+  <div class="separator"></div>
+
+  <div class="result-area">
+    <span class="zscore-value" id="zscoreNum">-0.67</span>
+    <span class="zscore-label">z-score</span>
+    <span class="badge" id="badge">Normal</span>
+  </div>
+  <p class="interpretation" id="interpretation"></p>
+</div>
+
+<!-- MODE TOGGLE -->
+<div class="mode-bar">
+  <button class="mode-btn active" data-mode="calc">Calculadora</button>
+  <button class="mode-btn" data-mode="log">Registro de sesiones</button>
+</div>
+
+<!-- SESSION LOG -->
+<div class="card rounded log-section" id="logSection">
+  <div class="card-title">Registro de sesiones</div>
+
+  <div class="log-header">
+    <input type="text" id="athleteName" placeholder="Nombre del atleta" style="flex:1;min-width:140px">
+    <input type="date" id="sessionDate">
+    <input type="number" id="sessionValue" placeholder="Valor" step="0.1" style="width:90px">
+    <button class="btn btn-primary" id="addEntry">+ Anotar</button>
+  </div>
+
+  <div id="logContent">
+    <p style="font-size:.85rem;color:#aaa;text-align:center;padding:20px 0">Sin registros aún. Anota sesiones arriba.</p>
+  </div>
+
+  <div class="separator"></div>
+
+  <div class="info-box tip" style="margin-bottom:12px">
+    <strong>Recomendación:</strong> Necesitas al menos <strong>10 sesiones</strong> para que la media y SD sean fiables. Antes de eso, el z-score es orientativo. A partir de 10 sesiones la calculadora usará automáticamente tu historial.
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-outline" id="exportBtn">Exportar CSV</button>
+    <button class="btn btn-danger" id="clearBtn">Borrar todo</button>
+  </div>
+</div>
+
+<!-- EDUCATION CARDS -->
+<div id="eduCards">
+  <div class="card rounded">
+    <div class="card-title">¿Por qué no comparar entre atletas?</div>
+    <div class="comparison">
+      <div class="athlete-card">
+        <h3>Atleta A</h3>
+        <div class="athlete-stat">Media: 40 cm &nbsp;|&nbsp; SD: 1.5 cm</div>
+        <div class="athlete-stat">Salto hoy: <strong>36 cm</strong></div>
+        <div class="athlete-zscore" style="color:#c62828">-2.67</div>
+        <span class="badge badge-high">Alerta alta</span>
+      </div>
+      <div class="athlete-card">
+        <h3>Atleta B</h3>
+        <div class="athlete-stat">Media: 34 cm &nbsp;|&nbsp; SD: 5 cm</div>
+        <div class="athlete-stat">Salto hoy: <strong>36 cm</strong></div>
+        <div class="athlete-zscore" style="color:#2e7d32">+0.40</div>
+        <span class="badge badge-normal">Normal</span>
+      </div>
+    </div>
+    <p class="note">Mismo salto (36 cm), conclusiones opuestas. El z-score es una lupa individual, no un ranking.</p>
+  </div>
+
+  <div class="card rounded">
+    <div class="card-title">¿Por qué la SD importa tanto?</div>
+    <div class="info-box">
+      <strong>Atleta consistente</strong> (SD = 1.5 cm): caída de 3 cm → z = −2.0 → <strong>alerta seria</strong>.<br>
+      <strong>Atleta variable</strong> (SD = 4 cm): misma caída de 3 cm → z = −0.75 → <strong>ruido normal</strong>.<br><br>
+      La SD calibra el umbral de alarma para cada persona. Sin ella, tratas igual lo que es diferente.
+    </div>
+  </div>
+</div>
+
+<p class="footer">z = (valor − media) / SD &nbsp;·&nbsp; Umbrales: ≥−0.5 Normal · −0.5 a −1 Leve · −1 a −2 Alerta · &lt;−2 Alta<br>Datos guardados en tu navegador (localStorage). Nada se envía a ningún servidor.</p>
+
+<script>
+// ── TEST DEFINITIONS ──
+const TESTS = [
+  { id:'cmj_height',  name:'Altura CMJ',         unit:'cm',   mean:39, sd:3,   today:37,  min:15,  max:75,  stepM:.5, stepS:.1, stepT:.5, sdMin:.5, sdMax:8 },
+  { id:'pf_imtp',     name:'Peak Force IMTP',     unit:'N',    mean:2800,sd:150,today:2650,min:1000,max:5000,stepM:10, stepS:5,  stepT:10, sdMin:20, sdMax:500 },
+  { id:'pf_cmj',      name:'Peak Force CMJ',      unit:'N',    mean:1800,sd:120,today:1700,min:800, max:4000,stepM:10, stepS:5,  stepT:10, sdMin:20, sdMax:400 },
+  { id:'impulse_cmj', name:'Impulso Propulsivo CMJ',unit:'N·s',mean:250, sd:15, today:240, min:80,  max:500, stepM:1,  stepS:.5, stepT:1,  sdMin:2,  sdMax:60 },
+  { id:'rsi',         name:'RSI',                 unit:'m/s',  mean:1.8, sd:.15,today:1.65,min:0.5, max:3.5, stepM:.01,stepS:.01,stepT:.01,sdMin:.02,sdMax:.5 },
+  { id:'rfd_max',     name:'RFD Máx',             unit:'N/s',  mean:12000,sd:800,today:11000,min:3000,max:25000,stepM:50,stepS:25,stepT:50,sdMin:100,sdMax:3000}
+];
+
+let currentTest = 0;
+const LS_KEY = 'zscore_sessions_v2';
+
+// ── ELEMENTS ──
+const $tabs    = document.getElementById('tabs');
+const $title   = document.getElementById('testTitle');
+const $mean    = document.getElementById('mean');
+const $sd      = document.getElementById('sd');
+const $today   = document.getElementById('today');
+const $meanV   = document.getElementById('meanVal');
+const $sdV     = document.getElementById('sdVal');
+const $todayV  = document.getElementById('todayVal');
+const $meanL   = document.getElementById('meanLabel');
+const $sdL     = document.getElementById('sdLabel');
+const $todayL  = document.getElementById('todayLabel');
+const $zNum    = document.getElementById('zscoreNum');
+const $badge   = document.getElementById('badge');
+const $interp  = document.getElementById('interpretation');
+const $logSec  = document.getElementById('logSection');
+const $logCont = document.getElementById('logContent');
+
+// ── BUILD TABS ──
+TESTS.forEach((t,i) => {
+  const d = document.createElement('div');
+  d.className = 'tab' + (i===0?' active':'');
+  d.textContent = t.name;
+  d.addEventListener('click', () => selectTest(i));
+  $tabs.appendChild(d);
+});
+
+// ── MODE TOGGLE ──
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.mode;
+    $logSec.classList.toggle('visible', mode==='log');
+    document.getElementById('eduCards').classList.toggle('hidden', mode==='log');
+    if(mode==='log') renderLog();
+  });
+});
+
+// ── SELECT TEST ──
+function selectTest(i) {
+  currentTest = i;
+  document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', j===i));
+  const t = TESTS[i];
+  $title.textContent = t.name;
+  $meanL.textContent = `Media personal (${t.unit})`;
+  $sdL.textContent   = `SD personal (${t.unit})`;
+  $todayL.textContent = `Valor hoy (${t.unit})`;
+
+  $mean.min=t.min; $mean.max=t.max; $mean.step=t.stepM; $mean.value=t.mean;
+  $sd.min=t.sdMin;  $sd.max=t.sdMax;  $sd.step=t.stepS;  $sd.value=t.sd;
+  $today.min=t.min; $today.max=t.max; $today.step=t.stepT; $today.value=t.today;
+
+  updateCalc();
+}
+
+// ── CLASSIFY ──
+function classify(z) {
+  if(z >= 0.5) return {label:'Positivo',cls:'badge-positive',msg:'Por encima de su rango habitual. Buen día — aprovechar para estímulos de calidad.'};
+  if(z >= -0.5) return {label:'Normal',cls:'badge-normal',msg:'Dentro de su rango habitual. Seguir con el programa previsto.'};
+  if(z >= -1)  return {label:'Leve',cls:'badge-mild',msg:'Ligera desviación. Puede ser normal, pero vale la pena preguntar cómo se siente.'};
+  if(z >= -2)  return {label:'Alerta',cls:'badge-alert',msg:'Desviación significativa. Considerar reducir carga o volumen hoy.'};
+  return {label:'Alerta alta',cls:'badge-high',msg:'Desviación importante. Revisar con el atleta: fatiga, sueño, estrés, lesión.'};
+}
+
+function fmt(v, test) {
+  const decimals = test.stepT < 1 ? (test.stepT < 0.1 ? 2 : 1) : 0;
+  return Number(v).toFixed(decimals);
+}
+
+// ── UPDATE CALCULATOR ──
+function updateCalc() {
+  const t = TESTS[currentTest];
+  const m = parseFloat($mean.value);
+  const s = parseFloat($sd.value);
+  const j = parseFloat($today.value);
+  $meanV.textContent  = fmt(m,t);
+  $sdV.textContent    = fmt(s,{stepT:t.stepS});
+  $todayV.textContent = fmt(j,t);
+
+  const z = (j - m) / s;
+  $zNum.textContent = (z>=0?'+':'') + z.toFixed(2);
+  const c = classify(z);
+  $badge.textContent = c.label;
+  $badge.className = 'badge '+c.cls;
+  $interp.textContent = c.msg;
+}
+
+$mean.addEventListener('input', updateCalc);
+$sd.addEventListener('input', updateCalc);
+$today.addEventListener('input', updateCalc);
+
+// ── SESSION STORAGE ──
+function getData() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch { return []; }
+}
+function saveData(d) { localStorage.setItem(LS_KEY, JSON.stringify(d)); }
+
+// ── ADD ENTRY ──
+document.getElementById('addEntry').addEventListener('click', () => {
+  const name = document.getElementById('athleteName').value.trim();
+  const date = document.getElementById('sessionDate').value;
+  const val  = parseFloat(document.getElementById('sessionValue').value);
+  if(!name||!date||isNaN(val)) return alert('Completa nombre, fecha y valor.');
+  const d = getData();
+  d.push({ name, date, test: TESTS[currentTest].id, value: val, ts: Date.now() });
+  saveData(d);
+  document.getElementById('sessionValue').value = '';
+  renderLog();
+});
+
+// ── RENDER LOG ──
+function renderLog() {
+  const data = getData();
+  const test = TESTS[currentTest];
+  const filtered = data.filter(r => r.test === test.id);
+
+  if(filtered.length === 0) {
+    $logCont.innerHTML = '<p style="font-size:.85rem;color:#aaa;text-align:center;padding:20px 0">Sin registros para '+test.name+'. Anota sesiones arriba.</p>';
+    return;
+  }
+
+  // Group by athlete
+  const athletes = {};
+  filtered.forEach(r => {
+    if(!athletes[r.name]) athletes[r.name] = [];
+    athletes[r.name].push(r);
+  });
+
+  let html = '';
+  for(const [name, records] of Object.entries(athletes)) {
+    records.sort((a,b) => a.date.localeCompare(b.date));
+    const values = records.map(r => r.value);
+    const n = values.length;
+    const mean = values.reduce((a,b)=>a+b,0)/n;
+    const sd = n>1 ? Math.sqrt(values.reduce((a,v)=>a+Math.pow(v-mean,2),0)/(n-1)) : 0;
+    const last = values[values.length-1];
+    const z = sd>0 ? (last-mean)/sd : 0;
+    const c = classify(z);
+    const reliable = n >= 10;
+
+    html += '<div style="margin-bottom:18px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">';
+    html += '<strong style="font-size:.95rem">'+esc(name)+'</strong>';
+    html += '<span class="badge '+(reliable?'badge-normal':'badge-mild')+'" style="font-size:.7rem">'+(reliable?'≥10 sesiones — fiable':'<10 sesiones — orientativo')+'</span>';
+    html += '</div>';
+
+    // Stats
+    html += '<div class="stats-box">';
+    html += statBox(n,'Sesiones');
+    html += statBox(fmt(mean,test),`Media (${test.unit})`);
+    html += statBox(sd>0?fmt(sd,{stepT:test.stepS}):'—',`SD (${test.unit})`);
+    html += statBox((z>=0?'+':'')+z.toFixed(2),'Último z');
+    html += '</div>';
+
+    // Table
+    html += '<table class="log-table"><thead><tr><th>#</th><th>Fecha</th><th>Valor ('+test.unit+')</th><th>z-score</th><th>Estado</th></tr></thead><tbody>';
+    records.forEach((r,i) => {
+      const rz = sd>0 ? (r.value-mean)/sd : 0;
+      const rc = classify(rz);
+      html += '<tr><td>'+(i+1)+'</td><td>'+r.date+'</td><td>'+fmt(r.value,test)+'</td><td>'+(rz>=0?'+':'')+rz.toFixed(2)+'</td><td><span class="badge '+rc.cls+'" style="font-size:.72rem">'+rc.label+'</span></td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  $logCont.innerHTML = html;
+}
+
+function statBox(val,lbl) {
+  return '<div class="stat-item"><div class="stat-num">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';
+}
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// ── EXPORT CSV ──
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = getData();
+  if(!data.length) return alert('No hay datos.');
+  const testMap = {};
+  TESTS.forEach(t => testMap[t.id]=t.name);
+  let csv = 'Atleta,Fecha,Prueba,Valor\n';
+  data.forEach(r => { csv += '"'+r.name+'",'+r.date+',"'+(testMap[r.test]||r.test)+'",'+r.value+'\n'; });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'zscore_sesiones.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// ── CLEAR ──
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if(confirm('¿Borrar TODOS los registros de TODAS las pruebas?')) {
+    localStorage.removeItem(LS_KEY);
+    renderLog();
+  }
+});
+
+// ── INIT ──
+document.getElementById('sessionDate').valueAsDate = new Date();
+selectTest(0);
+</script>
+</body>
+</html>
